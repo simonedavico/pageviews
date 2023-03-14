@@ -35,3 +35,4 @@ marko_pageviews-*.tar
 npm-debug.log
 /assets/node_modules/
 
+.volumes/
