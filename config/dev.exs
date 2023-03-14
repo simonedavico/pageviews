@@ -76,3 +76,13 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :git_hooks,
+  auto_install: true,
+  verbose: true,
+  # mix_path: "docker exec --tty $(docker-compose ps -q web) mix",
+  hooks: [
+    pre_commit: [
+      tasks: [{:file, "./priv/githooks/pre_commit.sh"}]
+    ]
+  ]

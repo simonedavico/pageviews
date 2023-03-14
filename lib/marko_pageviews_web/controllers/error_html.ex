@@ -1,4 +1,6 @@
 defmodule MarkoPageviewsWeb.ErrorHTML do
+  @moduledoc false
+
   use MarkoPageviewsWeb, :html
 
   # If you want to customize your error pages,

@@ -11,6 +11,7 @@ defmodule MarkoPageviewsWeb.CoreComponents do
   """
   use Phoenix.Component
 
+  alias Phoenix.HTML.Form
   alias Phoenix.LiveView.JS
 
   @doc """
@@ -161,12 +162,7 @@ defmodule MarkoPageviewsWeb.CoreComponents do
         <%= @title %>
       </p>
       <p class="mt-2 text-[0.8125rem] leading-5"><%= msg %></p>
-      <button
-        :if={@close}
-        type="button"
-        class="group absolute top-2 right-1 p-2"
-        aria-label="close"
-      >
+      <button :if={@close} type="button" class="group absolute top-2 right-1 p-2" aria-label="close">
         <Heroicons.x_mark solid class="h-5 w-5 stroke-current opacity-40 group-hover:opacity-70" />
       </button>
     </div>
@@ -310,8 +306,7 @@ defmodule MarkoPageviewsWeb.CoreComponents do
   end
 
   def input(%{type: "checkbox", value: value} = assigns) do
-    assigns =
-      assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
+    assigns = assign_new(assigns, :checked, fn -> Form.normalize_value("checkbox", value) end)
 
     ~H"""
     <div phx-feedback-for={@name}>
