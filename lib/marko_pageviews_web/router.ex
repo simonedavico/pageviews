@@ -2,22 +2,30 @@ defmodule MarkoPageviewsWeb.Router do
   use MarkoPageviewsWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {MarkoPageviewsWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {MarkoPageviewsWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", MarkoPageviewsWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :home
+    live("/page_a", PageALive)
+    live("/page_b", PageBLive)
+
+    scope "/page_c" do
+      live("/", PageCLive)
+
+      live("/tab_1", PageCLive, :tab_1)
+      live("/tab_2", PageCLive, :tab_2)
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -35,10 +43,10 @@ defmodule MarkoPageviewsWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: MarkoPageviewsWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard("/dashboard", metrics: MarkoPageviewsWeb.Telemetry)
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end
 end
