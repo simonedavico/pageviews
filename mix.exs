@@ -18,7 +18,7 @@ defmodule MarkoPageviews.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {MarkoPageviews.Application, []},
+      mod: {MarkoPageviews.Application, %{env: Mix.env()}},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -51,7 +51,8 @@ defmodule MarkoPageviews.MixProject do
       {:swoosh, "~> 1.3"},
       {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"}
+      {:telemetry_poller, "~> 1.0"},
+      {:ua_parser, "~> 1.8"}
     ]
   end
 

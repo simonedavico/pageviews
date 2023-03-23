@@ -1,6 +1,8 @@
 defmodule MarkoPageviewsWeb.Router do
   use MarkoPageviewsWeb, :router
 
+  import MarkoPageviewsWeb.Tracking.Plug
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -15,16 +17,20 @@ defmodule MarkoPageviewsWeb.Router do
   end
 
   scope "/", MarkoPageviewsWeb do
-    pipe_through(:browser)
+    pipe_through([:browser, :track_session])
 
-    live("/page_a", PageALive)
-    live("/page_b", PageBLive)
+    live_session :default,
+      session: {MarkoPageviewsWeb.Tracking.Hooks, :session, []},
+      on_mount: MarkoPageviewsWeb.Tracking.Hooks do
+      live("/page_a", PageALive)
+      live("/page_b", PageBLive)
 
-    scope "/page_c" do
-      live("/", PageCLive)
+      scope "/page_c" do
+        live("/", PageCLive)
 
-      live("/tab_1", PageCLive, :tab_1)
-      live("/tab_2", PageCLive, :tab_2)
+        live("/tab_1", PageCLive, :tab_1)
+        live("/tab_2", PageCLive, :tab_2)
+      end
     end
   end
 
@@ -45,7 +51,10 @@ defmodule MarkoPageviewsWeb.Router do
     scope "/dev" do
       pipe_through(:browser)
 
-      live_dashboard("/dashboard", metrics: MarkoPageviewsWeb.Telemetry)
+      live_dashboard("/dashboard",
+        metrics: MarkoPageviewsWeb.Telemetry
+      )
+
       forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end

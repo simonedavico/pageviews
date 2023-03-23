@@ -51,11 +51,12 @@ We want to track session (aka Browser Session) and pageviews without it having a
 
 ### Session
 
-For every new visitor, you create a session and store details in the database in the table tracking_session with the following fields. Create a long-lasting cookie with a unique id to track the same client over multiple sessions.
+For every new visitor, you create a session and store details in the database in the table `tracking_session` with the following fields. Create a long-lasting cookie with a unique id to track the same client over multiple sessions.
 
 * Browser Agent
 * Unique ID from your cookie
-* Pageview
+
+### Pageview
 
 Now, we want to track user engagement. We store for every pageview the following data.
 
