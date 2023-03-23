@@ -1,23 +1,4 @@
-// If you want to use Phoenix channels, run `mix help phx.gen.channel`
-// to get started and then uncomment the line below.
-// import "./user_socket.js"
-
-// You can include dependencies in two ways.
-//
-// The simplest option is to put them in assets/vendor and
-// import them using relative paths:
-//
-//     import "../vendor/some-package.js"
-//
-// Alternatively, you can `npm install some-package --prefix assets` and import
-// them using a path starting with the package name:
-//
-//     import "some-package"
-//
-
-// Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html";
-// Establish Phoenix Socket and LiveView configuration.
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
@@ -31,14 +12,16 @@ let liveSocket = new LiveSocket("/live", Socket, {
   hooks: {
     tracking: {
       mounted() {
-        // TODO: add timestamp as payload for more precise tracking
+        // N.B: listening to visibilitychange will not handle all cases. The event
+        // will not be fired when alt+tabbing to another window. In order to make detection
+        // more robust, we could track activity on the page, and after some time without
+        // any activity, check document.hasFocus() (https://developer.mozilla.org/en-US/docs/Web/API/Document/hasFocus).
+        // In this case, I'm keeping things simple and ignoring this case.
         window.addEventListener("visibilitychange", (e) => {
           if (document.visibilityState === "hidden") {
-            console.log("page hidden");
-            this.pushEvent("pause", {});
+            this.pushEvent("pause", { at: new Date().toISOString() });
           } else {
-            console.log("page shown");
-            this.pushEvent("resume", {});
+            this.pushEvent("resume", { at: new Date().toISOString() });
           }
         });
       },
@@ -46,34 +29,14 @@ let liveSocket = new LiveSocket("/live", Socket, {
   },
 });
 
-window.addEventListener("visibilitychange", (e) => {
-  if (document.visibilityState === "hidden") {
-  }
-
-  console.log("visibilitychange", e, document.visibilityState);
-});
-
 // Show progress bar on live navigation and form submits
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 
 window.addEventListener("phx:page-loading-start", (_info) => {
-  const { to, kind } = _info.detail;
-
-  if (kind === "initial") {
-  }
-
-  // console.log(
-  //   "page load start",
-  //   window.location.pathname, // nice, this is the current path
-  //   _info.detail.to,
-  //   _info.detail.kind,
-  //   _info
-  // );
   topbar.show(300);
 });
 
 window.addEventListener("phx:page-loading-stop", (_info) => {
-  //   console.log("page load stop", _info.detail.to, _info.detail.kind, _info);
   topbar.hide();
 });
 

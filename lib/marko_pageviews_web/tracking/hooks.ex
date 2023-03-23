@@ -32,12 +32,18 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
         :pause_resume_pageview_tracking,
         :handle_event,
         fn
-          "pause", _params, socket ->
-            Monitor.pause()
+          "pause", %{"at" => paused_at}, socket ->
+            paused_at
+            |> DateTime.from_iso8601()
+            |> Monitor.pause()
+
             {:halt, socket}
 
-          "resume", _params, socket ->
-            Monitor.resume()
+          "resume", %{"at" => resumed_at}, socket ->
+            resumed_at
+            |> DateTime.from_iso8601()
+            |> Monitor.resume()
+
             {:halt, socket}
 
           _event, _params, socket ->

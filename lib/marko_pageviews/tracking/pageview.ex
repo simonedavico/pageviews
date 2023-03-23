@@ -32,6 +32,9 @@ defmodule MarkoPageviews.Tracking.PageView do
   end
 
   def changeset(pageview \\ %__MODULE__{}, attrs) do
+    # add validations here, e.g
+    # engagement_time should be nonnegative
+    # ended_at - started_at should be positive
     cast(pageview, attrs, [
       :session_id,
       :view_module,

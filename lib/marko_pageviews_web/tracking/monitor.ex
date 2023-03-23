@@ -10,14 +10,14 @@ defmodule MarkoPageviewsWeb.Tracking.Monitor do
   alias MarkoPageviews.Tracking
   alias MarkoPageviewsWeb.Tracking.MonitorEntry
 
-  @spec pause :: :ok
-  def pause do
-    GenServer.cast(__MODULE__, {:pause, self()})
+  @spec pause(paused_at :: DateTime.t()) :: :ok
+  def pause(paused_at) do
+    GenServer.cast(__MODULE__, {:pause, self(), paused_at})
   end
 
-  @spec resume :: :ok
-  def resume do
-    GenServer.cast(__MODULE__, {:resume, self()})
+  @spec resume(resumed_at :: DateTime.t()) :: :ok
+  def resume(resumed_at) do
+    GenServer.cast(__MODULE__, {:resume, self(), resumed_at})
   end
 
   @spec monitor(view_module :: atom(), session_id :: String.t(), path :: String.t()) :: :ok
@@ -34,8 +34,6 @@ defmodule MarkoPageviewsWeb.Tracking.Monitor do
     {:ok, %{}}
   end
 
-  # TODO: pass track_from as param, for more precise tracking
-  # after doing so, this can become a handle_cast
   @impl GenServer
   def handle_call(
         {:monitor, pid, view_module, session_id, path},
@@ -56,24 +54,22 @@ defmodule MarkoPageviewsWeb.Tracking.Monitor do
      })}
   end
 
-  # TODO: send pause timestamp as param
   @impl GenServer
-  def handle_cast({:pause, pid}, state) do
+  def handle_cast({:pause, pid, paused_at}, state) do
     entry = Map.get(state, pid)
 
     Logger.debug(fn -> "Pause monitoring for pid #{inspect(pid)} (path #{entry.path})" end)
 
-    {:noreply, Map.put(state, pid, MonitorEntry.pause(entry, DateTime.utc_now()))}
+    {:noreply, Map.put(state, pid, MonitorEntry.pause(entry, paused_at))}
   end
 
-  # TODO: send resume timestamp as param
   @impl GenServer
-  def handle_cast({:resume, pid}, state) do
+  def handle_cast({:resume, pid, resumed_at}, state) do
     entry = Map.get(state, pid)
 
     Logger.debug(fn -> "Resume monitoring for pid #{inspect(pid)} (path #{entry.path})" end)
 
-    {:noreply, Map.put(state, pid, MonitorEntry.resume(entry, DateTime.utc_now()))}
+    {:noreply, Map.put(state, pid, MonitorEntry.resume(entry, resumed_at))}
   end
 
   @impl GenServer
