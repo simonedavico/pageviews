@@ -62,7 +62,7 @@ defmodule MarkoPageviewsWeb.Tracking.InMemoryPageviewTracker do
 
   @impl GenServer
   def handle_cast({:pause, pid, paused_at}, %{pageviews: pageviews} = state) do
-    entry = Map.get(state, pid)
+    entry = Map.get(pageviews, pid)
 
     Logger.debug(fn -> "Pause monitoring for pid #{inspect(pid)} (path #{entry.path})" end)
 
@@ -72,7 +72,7 @@ defmodule MarkoPageviewsWeb.Tracking.InMemoryPageviewTracker do
 
   @impl GenServer
   def handle_cast({:resume, pid, resumed_at}, %{pageviews: pageviews} = state) do
-    entry = Map.get(state, pid)
+    entry = Map.get(pageviews, pid)
 
     Logger.debug(fn -> "Resume monitoring for pid #{inspect(pid)} (path #{entry.path})" end)
 

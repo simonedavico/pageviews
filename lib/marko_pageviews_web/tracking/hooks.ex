@@ -15,7 +15,7 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
           if connected?(socket) do
             pageview_tracker().monitor(
               socket.view,
-              session["tracking_session_id"],
+              session["session_id"],
               URI.parse(uri).path
             )
           end
@@ -31,16 +31,16 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
         :handle_event,
         fn
           "pause", %{"at" => paused_at}, socket ->
-            paused_at
-            |> DateTime.from_iso8601()
-            |> pageview_tracker().pause()
+            {:ok, date, _} = DateTime.from_iso8601(paused_at)
+
+            pageview_tracker().pause(date)
 
             {:halt, socket}
 
           "resume", %{"at" => resumed_at}, socket ->
-            resumed_at
-            |> DateTime.from_iso8601()
-            |> pageview_tracker().resume()
+            {:ok, date, _} = DateTime.from_iso8601(resumed_at)
+
+            pageview_tracker().resume(date)
 
             {:halt, socket}
 
@@ -53,7 +53,7 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
   end
 
   def session(conn) do
-    %{"tracking_session_id" => conn.assigns.session_id}
+    %{"session_id" => conn.assigns.session_id}
   end
 
   defp pageview_tracker do
