@@ -12,18 +12,18 @@ defmodule MarkoPageviewsWeb.Tracking.InMemoryPageviewTracker do
   alias MarkoPageviews.Tracking
 
   @impl MarkoPageviewsWeb.Tracking.PageviewTracker
-  def pause(paused_at) do
-    GenServer.cast(__MODULE__, {:pause, self(), paused_at})
+  def pause(paused_at, pid \\ self()) do
+    GenServer.cast(__MODULE__, {:pause, pid, paused_at})
   end
 
   @impl MarkoPageviewsWeb.Tracking.PageviewTracker
-  def resume(resumed_at) do
-    GenServer.cast(__MODULE__, {:resume, self(), resumed_at})
+  def resume(resumed_at, pid \\ self()) do
+    GenServer.cast(__MODULE__, {:resume, pid, resumed_at})
   end
 
   @impl MarkoPageviewsWeb.Tracking.PageviewTracker
-  def monitor(view_module, session_id, path) do
-    GenServer.call(__MODULE__, {:monitor, self(), view_module, session_id, path})
+  def monitor(view_module, session_id, path, pid \\ self()) do
+    GenServer.call(__MODULE__, {:monitor, pid, view_module, session_id, path})
   end
 
   def start_link(opts) do
