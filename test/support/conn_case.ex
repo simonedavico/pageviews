@@ -21,8 +21,11 @@ defmodule MarkoPageviewsWeb.ConnCase do
     @moduledoc false
     @behaviour MarkoPageviewsWeb.Tracking.PageviewTracker
     def monitor(_, _, _), do: :ok
+    def monitor(_, _, _, _), do: :ok
     def pause(_), do: :ok
+    def pause(_, _), do: :ok
     def resume(_), do: :ok
+    def resume(_, _), do: :ok
   end
 
   using do
