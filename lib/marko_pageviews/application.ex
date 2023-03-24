@@ -37,5 +37,6 @@ defmodule MarkoPageviews.Application do
     :ok
   end
 
+  defp supervisors(:test), do: []
   defp supervisors(_), do: [MarkoPageviewsWeb.Tracking.Supervisor]
 end

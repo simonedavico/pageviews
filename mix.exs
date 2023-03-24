@@ -40,6 +40,7 @@ defmodule MarkoPageviews.MixProject do
       {:git_hooks, "~> 0.6.5"},
       {:heroicons, "~> 0.5"},
       {:jason, "~> 1.2"},
+      {:mox, "~> 1.0", only: :test},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_dashboard, "~> 0.7.2"},

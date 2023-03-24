@@ -5,8 +5,6 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
 
   import Phoenix.LiveView
 
-  alias MarkoPageviewsWeb.Tracking.Monitor
-
   def on_mount(:default, _params, session, socket) do
     socket =
       attach_hook(
@@ -15,7 +13,7 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
         :handle_params,
         fn _params, uri, socket ->
           if connected?(socket) do
-            Monitor.monitor(
+            pageview_tracker().monitor(
               socket.view,
               session["tracking_session_id"],
               URI.parse(uri).path
@@ -35,14 +33,14 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
           "pause", %{"at" => paused_at}, socket ->
             paused_at
             |> DateTime.from_iso8601()
-            |> Monitor.pause()
+            |> pageview_tracker().pause()
 
             {:halt, socket}
 
           "resume", %{"at" => resumed_at}, socket ->
             resumed_at
             |> DateTime.from_iso8601()
-            |> Monitor.resume()
+            |> pageview_tracker().resume()
 
             {:halt, socket}
 
@@ -56,5 +54,9 @@ defmodule MarkoPageviewsWeb.Tracking.Hooks do
 
   def session(conn) do
     %{"tracking_session_id" => conn.assigns.session_id}
+  end
+
+  defp pageview_tracker do
+    Application.get_env(:marko_pageviews, :pageview_tracker)
   end
 end

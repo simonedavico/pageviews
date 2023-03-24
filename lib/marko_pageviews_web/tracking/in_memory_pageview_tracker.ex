@@ -1,26 +1,27 @@
-defmodule MarkoPageviewsWeb.Tracking.Monitor do
+defmodule MarkoPageviewsWeb.Tracking.InMemoryPageviewTracker do
   @moduledoc """
-  Monitors LiveViews, timing how long users engage with them
+  Monitors LiveViews, timing how long users engage with them.
+  Pageview info are kept in memory until the monitored LiveView dies.
   """
+  @behaviour MarkoPageviewsWeb.Tracking.PageviewTracker
 
   use GenServer
 
   require Logger
 
   alias MarkoPageviews.Tracking
-  alias MarkoPageviewsWeb.Tracking.MonitorEntry
 
-  @spec pause(paused_at :: DateTime.t()) :: :ok
+  @impl MarkoPageviewsWeb.Tracking.PageviewTracker
   def pause(paused_at) do
     GenServer.cast(__MODULE__, {:pause, self(), paused_at})
   end
 
-  @spec resume(resumed_at :: DateTime.t()) :: :ok
+  @impl MarkoPageviewsWeb.Tracking.PageviewTracker
   def resume(resumed_at) do
     GenServer.cast(__MODULE__, {:resume, self(), resumed_at})
   end
 
-  @spec monitor(view_module :: atom(), session_id :: String.t(), path :: String.t()) :: :ok
+  @impl MarkoPageviewsWeb.Tracking.PageviewTracker
   def monitor(view_module, session_id, path) do
     GenServer.call(__MODULE__, {:monitor, self(), view_module, session_id, path})
   end

@@ -29,6 +29,8 @@ config :marko_pageviews, MarkoPageviewsWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :marko_pageviews, MarkoPageviews.Mailer, adapter: Swoosh.Adapters.Local
 
+config :marko_pageviews, pageview_tracker: MarkoPageviewsWeb.Tracking.InMemoryPageviewTracker
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.14.41",

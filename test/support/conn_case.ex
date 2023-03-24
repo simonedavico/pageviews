@@ -17,6 +17,14 @@ defmodule MarkoPageviewsWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  defmodule PageviewTrackerStub do
+    @moduledoc false
+    @behaviour MarkoPageviewsWeb.Tracking.PageviewTracker
+    def monitor(_, _, _), do: :ok
+    def pause(_), do: :ok
+    def resume(_), do: :ok
+  end
+
   using do
     quote do
       # The default endpoint for testing
@@ -32,6 +40,10 @@ defmodule MarkoPageviewsWeb.ConnCase do
   end
 
   setup tags do
+    if Map.get(tags, :stub_tracking, true) do
+      Mox.stub_with(PageviewTrackerMock, PageviewTrackerStub)
+    end
+
     MarkoPageviews.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end

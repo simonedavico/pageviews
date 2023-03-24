@@ -1,9 +1,9 @@
 defmodule MarkoPageviews.TrackingTest do
   use MarkoPageviews.DataCase, async: true
 
+  alias MarkoPageviews.Repo
   alias MarkoPageviews.Tracking
   alias MarkoPageviews.Tracking.PageView
-  alias MarkoPageviews.Repo
 
   describe "pageview tracking" do
     test "should snapshot engagement time on pause" do

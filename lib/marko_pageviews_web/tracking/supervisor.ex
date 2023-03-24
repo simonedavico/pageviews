@@ -13,6 +13,6 @@ defmodule MarkoPageviewsWeb.Tracking.Supervisor do
   end
 
   defp children do
-    [MarkoPageviewsWeb.Tracking.Monitor]
+    [MarkoPageviewsWeb.Tracking.InMemoryPageviewTracker]
   end
 end
