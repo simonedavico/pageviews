@@ -1,5 +1,7 @@
 # MarkoPageviews
 
+![CI](https://github.com/simonedavico/pageviews/actions/workflows/ci.yml/badge.svg)
+
 This project implements a Phoenix application with a few LiveView pages. Pageviews get tracked automatically, and engagement time is measured. You can read the full requirements for the challenge in [CHALLENGE.md](./CHALLENGE.md). You can read more about the solution in [SOLUTION.md](./SOLUTION.md).
 
 ## Setting up for development
