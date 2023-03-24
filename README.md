@@ -1,18 +1,28 @@
 # MarkoPageviews
 
-To start your Phoenix server:
+This project implements a Phoenix application with a few LiveView pages. Pageviews get tracked automatically, and engagement time is measured. You can read the full requirements for the challenge in [CHALLENGE.md](./CHALLENGE.md). You can read more about the solution in [SOLUTION.md](./SOLUTION.md).
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Setting up for development
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+> Prerequisite: ensure you have a working Erlang/Elixir installation; if you use [asdf](https://asdf-vm.com/manage/versions.html), the repository includes a `.tool-versions` file that will automatically pick the version;
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+1. Setup a Postgres database; if you have Docker Compose available, you can run `docker-compose up -d db`; you can check the development connection settings in [dev.exs](config/dev.exs);
+2. Install dependencies and database schema: `mix setup`;
+3. Run the server: `mix phx.server`; to run an interactive IEx session, `iex -S mix phx.server`;
+4. Now you can visit [`localhost:4000/page_a`](http://localhost:4000) from your browser.
 
-## Learn more
+> **_NOTE:_** when compiling for development, a pre_commit git hook that will lint anf check formatting for staged files is installed automatically. For more info, check the [git_hooks](https://github.com/qgadrian/elixir_git_hooks) package.
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## Useful commands
+
+| command              | action                                                              |
+| -------------------- | ------------------------------------------------------------------- |
+| `mix setup`          | Installs dependencies, creates DB schema, runs migrations and seeds |
+| `mix test`           | Run the test suite                                                  |
+| `mix format.all`     | Format the whole codebase                                           |
+| `mix credo --strict` | Check coding style guidelines                                       |
+| `mix phx.routes`     | Print all available routes                                          |
+
+## About the solution
+
+Read about the solution in [SOLUTION.md](./SOLUTION.md).
