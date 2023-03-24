@@ -22,69 +22,75 @@ defmodule MarkoPageviewsWeb.Tracking.Monitor do
 
   @spec monitor(view_module :: atom(), session_id :: String.t(), path :: String.t()) :: :ok
   def monitor(view_module, session_id, path) do
-    GenServer.call(__MODULE__, {:monitor, self(), Atom.to_string(view_module), session_id, path})
+    GenServer.call(__MODULE__, {:monitor, self(), view_module, session_id, path})
   end
 
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+    GenServer.start_link(
+      __MODULE__,
+      %{
+        pageviews: %{},
+        on_pageview: Keyword.get(opts, :on_pageview, fn -> nil end)
+      },
+      name: __MODULE__
+    )
   end
 
   @impl GenServer
-  def init(_opts) do
-    {:ok, %{}}
+  def init(state) do
+    {:ok, state}
   end
 
   @impl GenServer
   def handle_call(
         {:monitor, pid, view_module, session_id, path},
         _,
-        state
+        %{pageviews: pageviews} = state
       ) do
     Process.monitor(pid)
 
     Logger.debug(fn -> "Monitoring #{path} (pid #{inspect(pid)}) for session #{session_id}" end)
 
     {:reply, :ok,
-     Map.put(state, pid, %MonitorEntry{
-       view_module: view_module,
-       track_from: DateTime.utc_now(),
-       session_id: session_id,
-       path: path,
-       started_at: DateTime.utc_now()
-     })}
+     %{
+       state
+       | pageviews:
+           Map.put(pageviews, pid, Tracking.start_pageview(view_module, session_id, path))
+     }}
   end
 
   @impl GenServer
-  def handle_cast({:pause, pid, paused_at}, state) do
+  def handle_cast({:pause, pid, paused_at}, %{pageviews: pageviews} = state) do
     entry = Map.get(state, pid)
 
     Logger.debug(fn -> "Pause monitoring for pid #{inspect(pid)} (path #{entry.path})" end)
 
-    {:noreply, Map.put(state, pid, MonitorEntry.pause(entry, paused_at))}
+    {:noreply,
+     %{state | pageviews: Map.put(pageviews, pid, Tracking.pause_pageview(entry, paused_at))}}
   end
 
   @impl GenServer
-  def handle_cast({:resume, pid, resumed_at}, state) do
+  def handle_cast({:resume, pid, resumed_at}, %{pageviews: pageviews} = state) do
     entry = Map.get(state, pid)
 
     Logger.debug(fn -> "Resume monitoring for pid #{inspect(pid)} (path #{entry.path})" end)
 
-    {:noreply, Map.put(state, pid, MonitorEntry.resume(entry, resumed_at))}
+    {:noreply,
+     %{state | pageviews: Map.put(pageviews, pid, Tracking.resume_pageview(entry, resumed_at))}}
   end
 
   @impl GenServer
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    {entry, new_state} = Map.pop(state, pid)
+    {entry, new_pageviews} = Map.pop(state.pageviews, pid)
 
     Logger.debug(fn ->
       "LiveView with pid #{inspect(pid)} (path #{entry.path}) down, tracking pageview"
     end)
 
-    entry
-    |> MonitorEntry.stop(DateTime.utc_now())
-    |> Map.from_struct()
-    |> Tracking.track_pageview()
+    {:ok, _} = Tracking.stop_pageview(entry, DateTime.utc_now())
 
-    {:noreply, new_state}
+    state.on_pageview.()
+
+    {:noreply, %{state | pageviews: new_pageviews}}
   end
 end
